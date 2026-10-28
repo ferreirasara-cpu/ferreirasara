@@ -15,6 +15,8 @@ $ git push origin main
 error: you forgot to commit. again. 🌱
 ```
 
+<sub>Bugs found in this profile are released back into the wild. No bugs were harmed. 🐛</sub>
+
 ### 📄 About me (v0.1-beta)
 
 - **Status:** junior developer. Very junior. The code still has training wheels.
@@ -28,15 +30,9 @@ error: you forgot to commit. again. 🌱
 
 | Skill | Growth stage | Notes |
 |---|---|---|
-| HTML & CSS | 🌿 sapling | My [personal page](https://YOUR-USERNAME.github.io) is Exhibit A |
+| HTML & CSS | 🌿 sapling | My [personal page]([https://YOUR-USERNAME.github.io](https://ferreirasara-cpu.github.io/ferreirasara-cpu/) is Exhibit A |
 | Python | 🌱 sprout | We're on speaking terms. Mostly it speaks in error messages |
 | SQL | 🌱 sprout | `SELECT * FROM confidence WHERE level > 0;` → 1 row |
 | Git | 🫘 seed | Fully committed to commitment |
-| Regex | 🪨 buried | We do not talk about it |
 | Asking good questions | 🌳 fully grown | Came pre-installed |
 
-### 🌍 Visit the commit garden
-
-👉 **[YOUR-USERNAME.github.io](https://YOUR-USERNAME.github.io)**: water my (very sparse) contribution graph, run my code (it fails twice, then works, and I don't know why), and test corporate claims with my **Greenwashing Detector 3000**.
-
-<sub>Bugs found in this profile are released back into the wild. No bugs were harmed. 🐛</sub>

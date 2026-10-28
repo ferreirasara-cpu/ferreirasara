@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sara's Commit Garden</title>
+<meta name="description" content="A beginner developer growing code (and plants) one commit at a time.">
+<style>
+  :root {
+    --bg: #f6f3ea;
+    --surface: #fffdf7;
+    --ink: #1f2a1f;
+    --muted: #5d6b5a;
+    --line: #d9d3c2;
+    --leaf: #2f7d3b;
+    --leaf-soft: #e3f0dc;
+    --sun: #e9a23b;
+    --berry: #c2410c;
+    --g0: #ebe6d6; --g1: #c6e4b4; --g2: #8fca7c; --g3: #4f9e4a; --g4: #24632c;
+    --term-bg: #16201a; --term-ink: #d7f5cf; --term-dim: #7fa38a;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101511; --surface: #172019; --ink: #e6efe2; --muted: #9db09a;
+      --line: #2a372c; --leaf: #7ccf72; --leaf-soft: #1e2e20; --sun: #f0b75a; --berry: #f08a5d;
+      --g0: #1d271f; --g1: #23462a; --g2: #2f6b37; --g3: #4ea34a; --g4: #8be07a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101511; --surface: #172019; --ink: #e6efe2; --muted: #9db09a;
+    --line: #2a372c; --leaf: #7ccf72; --leaf-soft: #1e2e20; --sun: #f0b75a; --berry: #f08a5d;
+    --g0: #1d271f; --g1: #23462a; --g2: #2f6b37; --g3: #4ea34a; --g4: #8be07a;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 var(--sans);
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px 80px; }
+  a { color: var(--leaf); }
+  h1, h2, h3 { line-height: 1.2; margin: 0 0 .5em; }
+  h2 { font-size: 1.35rem; display: flex; gap: .5rem; align-items: baseline; }
+  h2 .tag { font: 600 .75rem var(--mono); color: var(--muted); }
+  section { margin-top: 56px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 20px;
+  }
+  .muted { color: var(--muted); }
+  .mono { font-family: var(--mono); }
+  button {
+    font: 600 .9rem var(--sans); cursor: pointer; border-radius: 999px;
+    padding: .55rem 1rem; border: 1px solid var(--leaf);
+    background: var(--leaf); color: var(--bg);
+  }
+  button.ghost { background: transparent; color: var(--leaf); }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, .cell:focus-visible {
+    outline: 3px solid var(--sun); outline-offset: 2px;
+  }
+
+  /* top bar */
+  .bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 0; font: 600 .9rem var(--mono); color: var(--muted);
+  }
+  .bar .theme { padding: .35rem .8rem; font-size: .8rem; }
+
+  /* hero terminal */
+  .hero { margin-top: 12px; }
+  .term {
+    background: var(--term-bg); color: var(--term-ink); border-radius: 14px;
+    font: 15px/1.7 var(--mono); padding: 0 0 18px; overflow: hidden;
+    box-shadow: 0 18px 40px -24px rgba(0,0,0,.45);
+  }
+  .term .dots { display: flex; gap: 7px; padding: 12px 14px; background: rgba(255,255,255,.04); }
+  .term .dots i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+  .term .dots i:nth-child(2) { background: #febc2e; }
+  .term .dots i:nth-child(3) { background: #28c840; }
+  .term pre { margin: 0; padding: 14px 18px 0; white-space: pre-wrap; word-break: break-word; min-height: 12.5em; font: inherit; }
+  .term .p { color: var(--term-dim); }
+  .term .ok { color: #9be38c; }
+  .term .warn { color: #ffd479; }
+  .term .err { color: #ff9b85; }
+  .caret { display: inline-block; width: .6em; height: 1.1em; background: var(--term-ink); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero h1 { font-size: clamp(2rem, 6vw, 3.4rem); margin-top: 28px; letter-spacing: -.02em; }
+  .hero h1 .sprout { display: inline-block; transform-origin: bottom center; animation: sway 3.5s ease-in-out infinite; }
+  @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  .hero .lede { font-size: 1.15rem; max-width: 640px; }
+
+  /* readme */
+  .readme { font-family: var(--mono); font-size: .95rem; }
+  .readme .file { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 14px; color: var(--muted); }
+  .readme ul { padding-left: 1.2em; margin: 0; }
+  .readme li { margin: .35em 0; }
+
+  /* skill plants */
+  .plants { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  .plant { text-align: center; }
+  .plant .pot { font-size: 2.6rem; line-height: 1; height: 3.2rem; display: flex; align-items: flex-end; justify-content: center; }
+  .plant h3 { font-size: 1rem; margin: .6em 0 .2em; }
+  .plant .stage { font: 600 .72rem var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--leaf); background: var(--leaf-soft); border-radius: 999px; padding: .15em .6em; display: inline-block; }
+  .plant p { font-size: .88rem; margin: .6em 0 0; color: var(--muted); }
+
+  /* garden */
+  .garden-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .stats { display: flex; gap: 18px; flex-wrap: wrap; font: 600 .9rem var(--mono); }
+  .stats b { color: var(--leaf); font-size: 1.15rem; }
+  .grid-scroll { overflow-x: auto; padding-bottom: 6px; }
+  .grid { display: grid; grid-template-columns: repeat(30, minmax(9px, 1fr)); gap: 3px; min-width: 300px; }
+  .cell { aspect-ratio: 1; border-radius: 3px; background: var(--g0); border: 0; padding: 0; cursor: pointer; position: relative; transition: transform .15s; }
+  .cell:hover { transform: scale(1.25); z-index: 1; }
+  .cell[data-l="1"] { background: var(--g1); }
+  .cell[data-l="2"] { background: var(--g2); }
+  .cell[data-l="3"] { background: var(--g3); }
+  .cell[data-l="4"] { background: var(--g4); }
+  .legend { display: flex; gap: 5px; align-items: center; font-size: .8rem; color: var(--muted); margin-top: 10px; justify-content: flex-end; }
+  .legend span { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .toast { min-height: 1.6em; margin-top: 10px; font: .9rem var(--mono); color: var(--muted); }
+
+  /* greenwashing */
+  textarea {
+    width: 100%; min-height: 96px; resize: vertical; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    padding: 12px; font: .95rem var(--sans);
+  }
+  .meter { height: 14px; border-radius: 999px; background: var(--g0); overflow: hidden; margin: 14px 0 8px; }
+  .meter i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--leaf), var(--sun), var(--berry)); transition: width .5s ease; }
+  .verdict { font-weight: 600; min-height: 1.6em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { font: .78rem var(--mono); padding: .15em .55em; border-radius: 999px; border: 1px solid var(--line); }
+  .chip.bad { border-color: var(--berry); color: var(--berry); }
+  .chip.good { border-color: var(--leaf); color: var(--leaf); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+
+  /* run my code */
+  .console { background: var(--term-bg); color: var(--term-ink); border-radius: 10px; padding: 14px; font: .9rem/1.6 var(--mono); min-height: 5.5em; white-space: pre-wrap; margin-top: 12px; }
+
+  /* changelog */
+  .log { list-style: none; padding: 0; margin: 0; border-left: 2px dashed var(--line); }
+  .log li { position: relative; padding: 0 0 18px 22px; }
+  .log li::before { content: "●"; position: absolute; left: -7px; top: 0; color: var(--leaf); font-size: .8rem; line-height: 1.9; }
+  .log .v { font: 700 .85rem var(--mono); color: var(--leaf); }
+
+  footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); font-size: .9rem; color: var(--muted); }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .two { grid-template-columns: 1fr; } .term { font-size: 13px; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span>~/sara/commit-garden 🌱</span>
+    <button class="ghost theme" id="themeBtn" type="button" aria-label="Toggle light and dark mode">☾ dark mode saves pixels</button>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="term" role="img" aria-label="A terminal introducing Sara">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <pre id="term"></pre>
+    </div>
+    <h1>Hi, I'm Sara <span class="sprout" aria-hidden="true">🌱</span></h1>
+    <p class="lede">I write code the way plants grow: slowly, towards the light, and occasionally sideways.
+      Former full-time reader of contracts, now part-time fighter of semicolons. Lifelong fan of the planet.</p>
+  </header>
+
+  <!-- README -->
+  <section aria-labelledby="readme-h">
+    <h2 id="readme-h">About me <span class="tag">README.md · v0.1-beta</span></h2>
+    <div class="card readme">
+      <div class="file"><span>📄 README.md</span><span>last edited: just now (as always)</span></div>
+      <ul>
+        <li><strong>Status:</strong> junior developer. Very junior. The code still has training wheels.</li>
+        <li><strong>Plot twist:</strong> spent years with business and law, then said "what if… computers?" Nobody saw it coming, including me.</li>
+        <li><strong>Superpower:</strong> turning messy things into organised things that people actually use.</li>
+        <li><strong>Kryptonite:</strong> forgetting to <code>git add</code> before <code>git commit</code>. Every. Single. Time.</li>
+        <li><strong>Obsessed with:</strong> sustainability, and the question "but where is the <em>data</em> behind that green claim?"</li>
+        <li><strong>Debugging strategy:</strong> explain the problem out loud to a houseplant. It hasn't solved anything yet, but it's a great listener.</li>
+        <li><strong>Known issues:</strong> will turn any conversation into a conversation about emissions reporting. Working on a fix (won't fix).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SKILL PLANTS -->
+  <section aria-labelledby="skills-h">
+    <h2 id="skills-h">Skill nursery <span class="tag">no progress bars, only plants</span></h2>
+    <div class="plants">
+      <div class="card plant"><div class="pot" aria-hidden="true">🌿</div><h3>HTML &amp; CSS</h3><span class="stage">sapling</span><p>Exhibit A: you are looking at it.</p></div>
+      <div class="card plant"><div class="pot" aria-hidden="true">🌱</div><h3>Python</h3><span class="stage">sprout</span><p>We're on speaking terms. Mostly it speaks in error messages.</p></div>
+      <div class="card plant"><div class="pot" aria-hidden="true">🌱</div><h3>SQL</h3><span class="stage">sprout</span><p><code>SELECT * FROM confidence WHERE level &gt; 0;</code> → 1 row returned.</p></div>
+      <div class="card plant"><div class="pot" aria-hidden="true">🫘</div><h3>Git</h3><span class="stage">seed</span><p>Fully committed to commitment. Merge conflicts are a personal matter.</p></div>
+      <div class="card plant"><div class="pot" aria-hidden="true">🪨</div><h3>Regex</h3><span class="stage">buried</span><p>Planted very deep. We do not talk about it.</p></div>
+      <div class="card plant"><div class="pot" aria-hidden="true">🌳</div><h3>Asking good questions</h3><span class="stage">fully grown</span><p>The one skill that came pre-installed.</p></div>
+    </div>
+  </section>
+
+  <!-- COMMIT GARDEN -->
+  <section aria-labelledby="garden-h">
+    <h2 id="garden-h">The commit garden <span class="tag">click to water</span></h2>
+    <div class="card">
+      <div class="garden-head">
+        <p class="muted" style="margin:0;max-width:520px">This is my contribution graph. It is… sparse. Honest, though.
+          Click a square to water it. Every square that reaches full size becomes a tree.</p>
+        <div class="stats" aria-live="polite">
+          <span>🌳 trees: <b id="trees">0</b></span>
+          <span>💧 waterings: <b id="water">0</b></span>
+        </div>
+      </div>
+      <div class="grid-scroll"><div class="grid" id="grid" role="group" aria-label="Contribution garden"></div></div>
+      <div class="legend" aria-hidden="true">seed <span style="background:var(--g0)"></span><span style="background:var(--g1)"></span><span style="background:var(--g2)"></span><span style="background:var(--g3)"></span><span style="background:var(--g4)"></span> tree</div>
+      <div class="toast" id="toast" aria-live="polite"></div>
+      <div class="row">
+        <button type="button" id="rain">☔ make it rain</button>
+        <button type="button" class="ghost" id="reset">🍂 autumn (reset)</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GREENWASHING DETECTOR -->
+  <section aria-labelledby="gw-h">
+    <h2 id="gw-h">Greenwashing detector 3000 <span class="tag">my first "product"</span></h2>
+    <div class="card">
+      <p class="muted" style="margin-top:0">Paste a corporate sustainability claim. The detector counts vague buzzwords and rewards actual numbers.
+        Built by a beginner, so the AI here is mostly "if" statements wearing a lab coat.</p>
+      <label for="claim" class="mono" style="font-size:.85rem">claim.txt</label>
+      <textarea id="claim" placeholder="e.g. Our eco-friendly, planet-conscious products are 100% natural and green!"></textarea>
+      <div class="row">
+        <button type="button" id="scan">🔍 scan claim</button>
+        <button type="button" class="ghost" id="ex1">try a vague one</button>
+        <button type="button" class="ghost" id="ex2">try a good one</button>
+      </div>
+      <div class="meter" aria-hidden="true"><i id="bar"></i></div>
+      <div class="verdict" id="verdict" aria-live="polite"></div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <!-- RUN MY CODE + CHANGELOG -->
+  <section class="two">
+    <div>
+      <h2>Run my code <span class="tag">results may vary</span></h2>
+      <div class="card">
+        <p class="muted" style="margin-top:0">A realistic simulation of every first attempt.</p>
+        <button type="button" id="run">▶ run main.py</button>
+        <div class="console" id="console" aria-live="polite">$ waiting for courage…</div>
+      </div>
+    </div>
+    <div>
+      <h2>Changelog <span class="tag">semantic-ish</span></h2>
+      <div class="card">
+        <ul class="log">
+          <li><span class="v">v0.0.1</span><br>Printed "hello, world". Took a screenshot. Sent it to the group chat.</li>
+          <li><span class="v">v0.0.2</span><br>Learned that indentation in Python is not a suggestion.</li>
+          <li><span class="v">v0.0.3</span><br>Fixed 1 bug. Created 3. Net growth, technically.</li>
+          <li><span class="v">v0.1.0</span><br>Built this page. Watered it daily. It hasn't died yet.</li>
+          <li><span class="v">v1.0.0</span><br><em>Coming soon™ (estimated: when the regex sprouts).</em></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>🌍 <strong>Sustainability report for this page:</strong> 0 frameworks, 0 trackers, 0 cookies, 0 web fonts, 1 HTML file.
+      Estimated carbon footprint: roughly one sigh.</p>
+    <p class="mono">Bugs found on this page are released back into the wild. No bugs were harmed.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = id => document.getElementById(id);
+
+  /* theme toggle */
+  const root = document.documentElement;
+  const themeBtn = $("themeBtn");
+  const isDark = () => root.dataset.theme ? root.dataset.theme === "dark"
+    : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const labelTheme = () => themeBtn.textContent = isDark() ? "☀ let the sun in" : "☾ dark mode saves pixels";
+  try { const t = localStorage.getItem("garden-theme"); if (t) root.dataset.theme = t; } catch (e) {}
+  labelTheme();
+  themeBtn.addEventListener("click", () => {
+    root.dataset.theme = isDark() ? "light" : "dark";
+    try { localStorage.setItem("garden-theme", root.dataset.theme); } catch (e) {}
+    labelTheme();
+  });
+
+  /* terminal intro */
+  const lines = [
+    ["p", "$ ", "whoami"],
+    ["", "", "sara — business & law brain, beginner developer, part-time plant"],
+    ["p", "$ ", "cat goals.txt"],
+    ["ok", "", "✓ write code that does something useful"],
+    ["ok", "", "✓ make sustainability data less boring"],
+    ["warn", "", "⚠ understand regex (status: postponed indefinitely)"],
+    ["p", "$ ", "git push origin main"],
+    ["err", "", "error: you forgot to commit. again. 🌱"],
+  ];
+  const term = $("term");
+  const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  let html = "";
+  const render = (extra = "") => term.innerHTML = html + extra + '<span class="caret"></span>';
+  if (reduce) {
+    html = lines.map(([c, p, t]) => `<span class="${c}">${esc(p + t)}</span>\n`).join("");
+    render();
+  } else {
+    let li = 0, ci = 0;
+    const tick = () => {
+      if (li >= lines.length) return render();
+      const [cls, prompt, text] = lines[li];
+      const full = prompt + text;
+      if (ci <= full.length) {
+        render(`<span class="${cls}">${esc(full.slice(0, ci))}</span>`);
+        ci++;
+        setTimeout(tick, prompt ? 45 : 12);
+      } else {
+        html += `<span class="${cls}">${esc(full)}</span>\n`;
+        li++; ci = 0;
+        setTimeout(tick, prompt ? 250 : 380);
+      }
+    };
+    tick();
+  }
+
+  /* commit garden */
+  const grid = $("grid");
+  const quips = [
+    "💧 glug glug.", "🌱 a sprout! it believes in you.", "🌿 photosynthesis: compiling…",
+    "🐛 found a bug. relocated it gently.", "☀ +1 sunlight, +0 merge conflicts.",
+    "🌳 a tree! that's more than my actual commit history.", "🌧 it's raining commits.",
+    "🪴 houseplant reviewed your code: no comments (it's a plant)."
+  ];
+  let trees = 0, water = 0;
+  const cells = [];
+  const toast = msg => $("toast").textContent = msg;
+  const bump = (cell, silent) => {
+    let l = +cell.dataset.l;
+    if (l >= 4) { if (!silent) toast("🌳 already a tree. it's thriving, leave it alone."); return; }
+    l++; cell.dataset.l = l; water++;
+    cell.setAttribute("aria-label", "Square, growth level " + l + " of 4");
+    if (l === 4) trees++;
+    $("trees").textContent = trees; $("water").textContent = water;
+    if (!silent) toast(l === 4 ? quips[5] : quips[Math.floor(Math.random() * quips.length)]);
+  };
+  for (let i = 0; i < 30 * 7; i++) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "cell";
+    // a realistic beginner history: mostly empty, a few heroic days
+    const r = Math.random();
+    const l = r > .93 ? 2 : r > .82 ? 1 : 0;
+    b.dataset.l = l;
+    b.setAttribute("aria-label", "Square, growth level " + l + " of 4");
+    b.addEventListener("click", () => bump(b));
+    grid.appendChild(b); cells.push(b);
+  }
+  $("rain").addEventListener("click", () => {
+    let n = 0;
+    const drop = () => {
+      for (let k = 0; k < 6; k++) bump(cells[Math.floor(Math.random() * cells.length)], true);
+      if (++n < 12 && !reduce) setTimeout(drop, 70); else toast(quips[6] + " the garden says thank you.");
+    };
+    drop();
+  });
+  $("reset").addEventListener("click", () => {
+    cells.forEach(c => { c.dataset.l = 0; c.setAttribute("aria-label", "Square, growth level 0 of 4"); });
+    trees = 0; water = 0; $("trees").textContent = 0; $("water").textContent = 0;
+    toast("🍂 autumn. everything composts. we start again, wiser.");
+  });
+
+  /* greenwashing detector */
+  const buzz = ["eco-friendly", "eco friendly", "environmentally friendly", "planet-friendly", "planet friendly",
+    "green", "natural", "sustainable", "conscious", "clean", "pure", "responsible", "carbon neutral",
+    "climate positive", "climate-positive", "net zero", "net-zero", "nature", "earth", "eco", "biodegradable", "guilt-free"];
+  const evidence = [
+    [/\b\d+(\.\d+)?\s?%/g, "a percentage"],
+    [/\b(t|kt|mt)?co2e?\b/gi, "CO₂ units"],
+    [/\bscope\s?[123]\b/gi, "scope 1/2/3"],
+    [/\b(kwh|mwh|gwh|tonnes?|tons?)\b/gi, "physical units"],
+    [/\b(verified|audited|assured|third[- ]party)\b/gi, "independent verification"],
+    [/\b(19|20)\d{2}\b/g, "a baseline/target year"],
+    [/\b(sbti|csrd|gri|tcfd|issb)\b/gi, "a reporting standard"],
+  ];
+  const verdicts = [
+    [15, "🌳 Solid. Numbers, units, verification. A sustainability nerd somewhere just smiled."],
+    [40, "🌿 Not bad. Some real data in there, but a few buzzwords are doing heavy lifting."],
+    [70, "🍂 Hmm. Lots of adjectives, not many numbers. Ask: compared to what, measured how?"],
+    [101, "🚨 Maximum greenwash. This sentence is 90% vibes and 10% leaf emoji."],
+  ];
+  const scan = () => {
+    const text = $("claim").value.trim();
+    const chips = $("chips"); chips.innerHTML = "";
+    if (!text) { $("verdict").textContent = "📭 Paste a claim first. Even the detector needs data."; $("bar").style.width = "0"; return; }
+    const lower = text.toLowerCase();
+    const found = buzz.filter(w => new RegExp("\\b" + w.replace(/[-\s]/g, "[-\\s]") + "\\b").test(lower));
+    const uniq = [...new Set(found)];
+    const proofs = evidence.filter(([re]) => { re.lastIndex = 0; return re.test(text); }).map(([, name]) => name);
+    let score = 30 + uniq.length * 14 - proofs.length * 16;
+    score = Math.max(2, Math.min(100, score));
+    $("bar").style.width = score + "%";
+    $("verdict").textContent = `Greenwash score: ${score}/100. ` + verdicts.find(([max]) => score < max)[1];
+    uniq.forEach(w => { const s = document.createElement("span"); s.className = "chip bad"; s.textContent = "buzzword: " + w; chips.appendChild(s); });
+    proofs.forEach(p => { const s = document.createElement("span"); s.className = "chip good"; s.textContent = "evidence: " + p; chips.appendChild(s); });
+  };
+  $("scan").addEventListener("click", scan);
+  $("ex1").addEventListener("click", () => { $("claim").value = "Our eco-friendly, planet-conscious products are 100% natural, green and sustainable!"; scan(); });
+  $("ex2").addEventListener("click", () => { $("claim").value = "We cut Scope 1 and 2 emissions by 32% versus our 2019 baseline (412 ktCO2e), third-party assured under CSRD."; scan(); });
+
+  /* run my code */
+  let runs = 0;
+  const attempts = [
+    "$ python main.py\n  File \"main.py\", line 7\n    print(\"hello, planet\"\n                          ^\nSyntaxError: '(' was never closed",
+    "$ python main.py\nTraceback (most recent call last):\n  File \"main.py\", line 3, in <module>\n    import motivation\nModuleNotFoundError: No module named 'motivation'",
+    "$ pip install coffee\nSuccessfully installed coffee-1.0\n$ python main.py\nhello, planet 🌍\n\n✓ It works. I don't know why. Not touching it.",
+  ];
+  $("run").addEventListener("click", () => {
+    const out = attempts[Math.min(runs, attempts.length - 1)];
+    $("console").textContent = out;
+    $("run").textContent = runs < attempts.length - 1 ? "▶ try again (hopefully)" : "▶ run it again (bravely)";
+    runs++;
+  });
+})();
+</script>
+</body>
+</html>
